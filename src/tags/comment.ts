@@ -23,9 +23,8 @@ export class Comment implements Tag {
     stream.start();
   }
 
-  public render() {
-    return Promise.resolve("");
-  }
+  // tslint:disable-next-line:no-empty
+  public async render() {}
 }
 
 export const comment = (liquid: Engine) => liquid.registerTag("comment", TagFactory(Comment, liquid));

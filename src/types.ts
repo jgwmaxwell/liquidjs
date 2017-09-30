@@ -59,7 +59,7 @@ export interface TagInstance {
   name: string;
   tagImpl: Tag;
 
-  render: (scope: Scope) => Promise<string>;
+  render: (writer: Writeable, scope: Scope) => Promise<void>;
 }
 
 export interface LiquidError extends Error {
@@ -140,7 +140,7 @@ export type TagFactory = () => Tag;
 
 export interface Tag {
   parse?: (token: Token, tokens: Token[]) => void;
-  render: (scope: Scope, obj: Dict<any>) => Promise<string>;
+  render: (writer: Writeable, scope: Scope, obj: Dict<any>) => Promise<void>;
 }
 
 // export interface LiquidTemplate {

@@ -4,6 +4,8 @@
   "description": "A Liquid template engine for Node.js and browsers, with all shopify/liquid features.",
   "main": "dist/index.js",
   "scripts": {
+    "bench": "NODE_ENV=production node --ignition --turbo benchmarks/index.js",
+    "test:generate": "node benchmarks/generate.js && open benchmarks/generated.html",
     "lint": "tslint -c tslint.json '{src,__tests__}/**/*.{ts,tsx}'",
     "test": "NODE_ENV=test jest"
   },

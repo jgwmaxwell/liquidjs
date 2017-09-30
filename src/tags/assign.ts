@@ -1,7 +1,7 @@
 import { Engine } from "../index";
 import { identifier } from "../lexical";
 import { Scope } from "../scope";
-import { Tag, TagToken } from "../types";
+import { Tag, TagToken, Writeable } from "../types";
 import { assert } from "../util/assert";
 import { TagFactory } from "./utils";
 const re = new RegExp(`(${identifier.source})\\s*=(.*)`);
@@ -22,9 +22,8 @@ class Assign implements Tag {
     this.value = match[2];
   }
 
-  public async render(scope: Scope): Promise<string> {
+  public async render(_: Writeable, scope: Scope) {
     scope.set(this.key, this.liquid.evalOutput(this.value, scope));
-    return "";
   }
 }
 

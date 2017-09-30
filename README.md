@@ -1,16 +1,14 @@
-# liquidjs
+# liquidts
 
-[![npm](https://img.shields.io/npm/v/liquidjs.svg)](https://www.npmjs.org/package/liquidjs)
-[![Build Status](https://travis-ci.org/harttle/liquidjs.svg?branch=master)](https://travis-ci.org/harttle/liquidjs)
-[![Coveralls](https://img.shields.io/coveralls/harttle/liquidjs.svg)](https://coveralls.io/github/harttle/liquidjs?branch=master)
-[![GitHub issues](https://img.shields.io/github/issues-closed/harttle/liquidjs.svg)](https://github.com/harttle/liquidjs/issues)
+This originated as a typescriptification of [harttle/liquidjs](https://github.com/harrtle/liquidjs) and huge thanks are
+offered breaking the back of implementing liquid in javascript. As I started work, it was obvious that it wasn't going
+to remain in-sync with the original project, and hence making this a hard fork. This document will talk a bit about the
+differences in design direction and what it tries to accomplish.
 
-A Liquid engine implementation for both Node.js and browsers, with all [shopify/liquid][shopify/liquid] features.
-Formerly known as shopify-liquid. 
+The original work, of course, comes from [shopify/liquid][shopify/liquid] - and thanks to them for such a great platform
+to work from.
 
-Live Demo: <http://harttle.com/liquidjs/>
-
-> The Liquid template engine is implemented in Ruby originally, 
+> The Liquid template engine is implemented in Ruby originally,
 > which is used by [Jekyll][jekyll] and [Github Pages][gh].
 
 Features:
@@ -51,7 +49,7 @@ Caching templates:
 ```javascript
 var tpl = engine.parse('{{name | capitalize}}');
 engine.render(tpl, {name: 'alice'})
-    .then(function(html){   
+    .then(function(html){
         // html === 'Alice'
     });
 ```
@@ -67,7 +65,7 @@ engine.renderFile("hello.liquid", {name: 'alice'})
     .then(function(html){
        // html === 'Alice'
     });
-// equivalent to: 
+// equivalent to:
 engine.renderFile("hello", {name: 'alice'})
     .then(function(html){
        // html === 'Alice'
@@ -88,7 +86,7 @@ Defaults to `["."]`
 
 * `strict_filters` is used to enable strict filter existence. If set to `false`, undefined filters will be rendered as empty string. Otherwise, undefined filters will cause an exception. Defaults to `false`.
 
-* `strict_variables` is used to enable strict variable derivation. 
+* `strict_variables` is used to enable strict variable derivation.
 If set to `false`, undefined variables will be rendered as empty string.
 Otherwise, undefined variables will cause an exception. Defaults to `false`.
 
@@ -102,7 +100,7 @@ Otherwise, undefined variables will cause an exception. Defaults to `false`.
 
 ```javascript
 // register liquid engine
-app.engine('liquid', engine.express()); 
+app.engine('liquid', engine.express());
 app.set('views', './views');            // specify the views directory
 app.set('view engine', 'liquid');       // set to default
 ```

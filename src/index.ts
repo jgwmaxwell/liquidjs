@@ -49,10 +49,12 @@ export class Engine implements EnginePrototype {
     return this.parser.parse(tokens);
   }
 
-  public render(tpl: Template | Template[], ctx?: any, opts?: Options) {
+  public async render(tpl: Template | Template[], ctx?: any, opts?: Options) {
     const options = _.assign({}, this.options, opts);
     const scope = new Scope(ctx, [], options);
-    return this.renderer.renderTemplates(_.castArray(tpl), scope);
+    const writer = new WriteBuffer();
+    await this.renderer.renderTemplates(_.castArray(tpl), scope, writer);
+    return writer;
   }
 
   public parseAndRender(html: string, ctx?: any, opts?: Options) {
@@ -67,9 +69,11 @@ export class Engine implements EnginePrototype {
       .then(templates => this.render(templates, ctx, opts));
   }
 
-  public evalOutput(str: string, scope: any) {
+  public async evalOutput(str: string, scope: any) {
     const tpl = this.parser.parseOutput(str.trim());
-    return this.renderer.evalOutput(tpl, scope, new WriteBuffer()).then(res => res.read());
+    const buf = new WriteBuffer();
+    await this.renderer.evalOutput(tpl, scope, buf);
+    return buf.read();
   }
 
   // tslint:disable-next-line:ban-types

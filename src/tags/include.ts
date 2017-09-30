@@ -1,8 +1,8 @@
 import { Engine, lexical } from "../";
 import { evalValue } from "../syntax";
-import { Dict, Scope, Tag, TagToken } from "../types";
+import { Dict, Scope, Tag, TagToken, Writeable } from "../types";
 import { assert } from "../util/assert";
-import { TagFactory, toString } from "./utils";
+import { TagFactory } from "./utils";
 
 const withRE = new RegExp(`with\\s+(${lexical.value.source})`);
 
@@ -26,7 +26,7 @@ export class Include implements Tag {
     }
   }
 
-  public render(scope: Scope, hash: Dict<any>) {
+  public async render(writer: Writeable, scope: Scope, hash: Dict<any>) {
     const filepath = evalValue(this.value, scope);
     const register = this.liquid.options;
 
@@ -34,10 +34,9 @@ export class Include implements Tag {
       hash[filepath] = evalValue(this.with, scope);
     }
 
-    return this.liquid
+    await this.liquid
       .getTemplate(filepath, register.root)
-      .then(templates => this.liquid.renderer.renderTemplates(templates, scope.push(hash)))
-      .then(toString);
+      .then(templates => this.liquid.renderer.renderTemplates(templates, scope.push(hash), writer));
   }
 }
 

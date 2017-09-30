@@ -32,10 +32,10 @@ export class TagInstance implements t.TagInstance {
     }
   }
 
-  public async render(scope: t.Scope) {
+  public async render(writer: t.Writeable, scope: t.Scope) {
     const obj = hash(this.token.args || "", scope);
     const impl = this.tagImpl;
 
-    return await impl.render(scope, obj);
+    return await impl.render(writer, scope, obj);
   }
 }

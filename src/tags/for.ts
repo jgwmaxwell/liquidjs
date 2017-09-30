@@ -1,12 +1,11 @@
 import { isObject, isString } from "lodash";
 import { Engine } from "../";
-import { WriteBuffer } from "../buffer";
 import * as lexical from "../lexical";
 import { evalExp } from "../syntax";
-import { Dict, Scope, Tag, TagToken, Template, Token } from "../types";
+import { Dict, Scope, Tag, TagToken, Template, Token, Writeable } from "../types";
 import { assert } from "../util/assert";
 import { RenderBreakError } from "../util/error";
-import { TagFactory, toString } from "./utils";
+import { TagFactory } from "./utils";
 
 const re = new RegExp(`^(${lexical.identifier.source})\\s+in\\s+` +
   `(${lexical.value.source})` +
@@ -52,7 +51,7 @@ export class For implements Tag {
     stream.start();
   }
 
-  public render(scope: Scope, hash: Dict<any>) {
+  public async render(writer: Writeable, scope: Scope, hash: Dict<any>) {
     // tslint:disable-next-line:no-let
     let collection = evalExp(this.collection, scope);
 
@@ -65,7 +64,8 @@ export class For implements Tag {
     }
 
     if (!Array.isArray(collection) || !collection.length) {
-      return this.liquid.renderer.renderTemplates(this.elseTemplates, scope).then(toString);
+      await this.liquid.renderer.renderTemplates(this.elseTemplates, scope, writer);
+      return;
     }
 
     const length = collection.length;
@@ -88,29 +88,27 @@ export class For implements Tag {
       },
     }));
 
-    const output = new WriteBuffer();
     const render = (ctx: Dict<any>) =>
       this
         .liquid
         .renderer
-        .renderTemplates(this.templates, scope.push(ctx), output)
+        .renderTemplates(this.templates, scope.push(ctx), writer)
         .catch((e: Error) => {
           if (e instanceof RenderBreakError) {
-            output.write(e.resolvedHTML);
+            writer.write(e.resolvedHTML);
             if (e.message === "continue") { return; }
           }
           throw e;
         });
 
-    return Promise
+    await Promise
       .all(contexts.map(render))
       .catch(e => {
         if (e instanceof RenderBreakError && e.message === "break") {
           return;
         }
         throw e;
-      })
-      .then(() => output.read());
+      });
   }
 }
 

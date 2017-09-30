@@ -1,8 +1,8 @@
 import { Engine } from "../index";
 import { evalExp, isTruthy } from "../syntax";
-import { Scope, Tag, TagToken, Template, Token } from "../types";
+import { Scope, Tag, TagToken, Template, Token, Writeable } from "../types";
 import { assert } from "../util/assert";
-import { TagFactory, toString } from "./utils";
+import { TagFactory } from "./utils";
 
 interface Branch {
   cond: string;
@@ -42,16 +42,17 @@ export class If implements Tag {
     stream.start();
   }
 
-  public render(scope: Scope) {
+  public async render(writer: Writeable, scope: Scope) {
     const { renderer } = this.liquid;
     for (const branch of this.branches) {
       const cond = evalExp(branch.cond, scope);
       if (isTruthy(cond)) {
-        return renderer.renderTemplates(branch.templates, scope).then(toString);
+        await renderer.renderTemplates(branch.templates, scope, writer);
+        return;
       }
     }
 
-    return renderer.renderTemplates(this.elseTemplates, scope).then(toString);
+    await renderer.renderTemplates(this.elseTemplates, scope, writer);
   }
 }
 
