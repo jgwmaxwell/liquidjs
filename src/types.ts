@@ -72,17 +72,21 @@ export interface Options {
   blocks?: {};
   cache?: boolean;
   extname?: string;
-  root: string[];
+  root?: string[];
   strictFilters?: boolean;
   strictVariables?: boolean;
 }
 
-export interface Scope {
-  scopes: Scope[];
-  opts: Options;
-  vars: Dict<any>;
+export interface ResolvedOptions extends Options {
+  blocks: {};
+  cache: boolean;
+  extname: string;
+  root: string[];
+  strictFilters: boolean;
+  strictVariables: boolean;
+}
 
-  getAll: () => Dict<any>;
+export interface Scope {
   get: (str: string) => Dict<any> | undefined;
   set: (str: string, val: any) => Scope;
   push: (ctx: Dict<any>) => Scope;

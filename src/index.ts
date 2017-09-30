@@ -5,18 +5,18 @@ import * as filters from "./filters";
 import * as lexical from "./lexical";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
-import * as Scope from "./scope";
+import { Scope } from "./scope";
 import * as syntax from "./syntax";
 import { TagContext } from "./tagContext";
 import * as tags from "./tags";
 import * as tokenizer from "./tokenizer";
-import { Dict, EnginePrototype, Options, Template } from "./types";
+import { Dict, EnginePrototype, Options, Template, ResolvedOptions } from "./types";
 import * as errors from "./util/error";
 import { readFileAsync, statFileAsync } from "./util/fs";
 
 export class Engine implements EnginePrototype {
   public cache?: Dict<any>;
-  public options: Options;
+  public options: ResolvedOptions;
   public tag: TagContext;
   public filter: FilterContext;
   public parser: Parser;
@@ -26,7 +26,14 @@ export class Engine implements EnginePrototype {
     if (options.cache) {
       this.cache = new Map();
     }
-    this.options = options;
+    this.options = {
+      blocks: _.get(options, "blocks", {}),
+      cache: _.get(options, "cache", false),
+      extname: _.get(options, "extname", ".liquid"),
+      root: _.get(options, "root", []),
+      strictFilters: _.get(options, "strictFilters", false),
+      strictVariables: _.get(options, "strictVariables", false),
+    };
     this.tag = new TagContext();
     this.filter = new FilterContext(options);
     this.parser = new Parser(this.tag, this.filter);
@@ -43,7 +50,7 @@ export class Engine implements EnginePrototype {
 
   public render(tpl: Template | Template[], ctx?: any, opts?: Options) {
     const options = _.assign({}, this.options, opts);
-    const scope = Scope.factory(ctx, options);
+    const scope = new Scope(ctx, [], options);
     return this.renderer.renderTemplates(_.castArray(tpl), scope);
   }
 
