@@ -1,5 +1,4 @@
 import { Suite } from "benchmark";
-import { Stack } from "immutable";
 import { times } from "lodash";
 
 const suite = new Suite();

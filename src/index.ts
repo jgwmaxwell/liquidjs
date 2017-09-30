@@ -13,6 +13,7 @@ import * as tokenizer from "./tokenizer";
 import { Dict, EnginePrototype, Options, Template, ResolvedOptions } from "./types";
 import * as errors from "./util/error";
 import { readFileAsync, statFileAsync } from "./util/fs";
+import { WriteBuffer } from "./buffer";
 
 export class Engine implements EnginePrototype {
   public cache?: Dict<any>;
@@ -68,7 +69,7 @@ export class Engine implements EnginePrototype {
 
   public evalOutput(str: string, scope: any) {
     const tpl = this.parser.parseOutput(str.trim());
-    return this.renderer.evalOutput(tpl, scope, Buffer.from("")).then(buf => buf.toString());
+    return this.renderer.evalOutput(tpl, scope, new WriteBuffer()).then(res => res.read());
   }
 
   // tslint:disable-next-line:ban-types

@@ -1,3 +1,4 @@
+import { toString } from "lodash";
 import { WriteBuffer } from "./buffer";
 import { evalExp } from "./syntax";
 import { TagInstance } from "./tagInstance";
@@ -7,17 +8,18 @@ import {
   RenderError,
 } from "./util/error";
 
-const defaultString = (val: any) => val === undefined ? "" : val;
-
 const write = (buf: Writeable) => (content: string) => {
-  if (typeof content !== "string") { return buf; }
-  buf.write(content);
+  if (typeof content !== "string") {
+    buf.write(toString(content));
+  } else {
+    buf.write(content);
+  }
   return buf;
 };
 
 // tslint:disable:no-this
 export class Renderer {
-  public renderTemplates(templates: Template[], scope: Scope, writer?: Buffer): Promise<Writeable> {
+  public renderTemplates(templates: Template[], scope: Scope, writer?: Writeable): Promise<Writeable> {
     const output = writer || new WriteBuffer();
 
     return Promise
@@ -34,7 +36,7 @@ export class Renderer {
       .then(() => output);
   }
 
-  public renderTemplate = (template: Template, scope: Scope, writer?: Writeable): Promise<Writeable> => {
+  public renderTemplate = (template: Template, scope: Scope, writer?: Writeable): Promise<Writeable | string> => {
     const output = writer || new WriteBuffer();
     switch (template.type) {
       case "tag":
@@ -44,7 +46,7 @@ export class Renderer {
       case "control":
         return Promise.resolve(output);
       default:
-        return Promise.resolve(template.value).then(defaultString).then(write(output));
+        return Promise.resolve(template.value).then(write(output));
     }
   }
 
@@ -55,15 +57,14 @@ export class Renderer {
     return template.render(scope).then(write(output));
   }
 
-  public evalOutput(template: OutputTemplate, scope: Scope, output: Writeable): Promise<Writeable> {
-    // tslint:disable-next-line:no-console
-    console.log("evalOutput: ", template);
+  public evalOutput(template: OutputTemplate, scope: Scope, writer: Writeable): Promise<Writeable> {
     return Promise.resolve(
       template
         .filters
         .reduce(
           (prev, filter) => filter.render(prev, scope),
           evalExp(template.initial, scope),
-       )).then(write(output));
+       ))
+       .then(write(writer));
   }
 }

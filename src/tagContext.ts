@@ -24,8 +24,6 @@ export class TagContext {
   }
 
   public register(name: string, tag: TagFactory): void {
-    // tslint:disable-next-line:no-console
-    console.log(`setting tag: ${name}`);
     this.tags.set(name, tag);
   }
 

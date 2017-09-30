@@ -7,6 +7,7 @@ export type Literal = number | boolean | string | any[];
 export type Nil = null | undefined;
 
 export interface Writeable {
+  read: () => string;
   write: (content: string) => number | void;
 }
 

@@ -1,16 +1,19 @@
+import { join } from "lodash";
+
 export class WriteBuffer {
-  private bufs: Buffer[];
+  private bufs: string[];
 
   constructor() {
     this.bufs = [];
   }
 
   public write(str: string) {
-    return this.bufs.push(Buffer.from(str));
+    // tslint:disable-next-line:no-console
+    return this.bufs.push(str);
   }
 
   public read(): string {
-    return Buffer.concat(this.bufs).toString("utf-8");
+    return join(this.bufs, "");
   }
 
   public toString(): string {
