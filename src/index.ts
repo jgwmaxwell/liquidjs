@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import * as path from "path";
+import { WriteBuffer } from "./buffer";
 import { FilterContext } from "./filterContext";
 import * as filters from "./filters";
 import * as lexical from "./lexical";
@@ -10,10 +11,9 @@ import * as syntax from "./syntax";
 import { TagContext } from "./tagContext";
 import * as tags from "./tags";
 import * as tokenizer from "./tokenizer";
-import { Dict, EnginePrototype, Options, Template, ResolvedOptions } from "./types";
+import { Dict, EnginePrototype, Options, ResolvedOptions, Template } from "./types";
 import * as errors from "./util/error";
 import { readFileAsync, statFileAsync } from "./util/fs";
-import { WriteBuffer } from "./buffer";
 
 export class Engine implements EnginePrototype {
   public cache?: Dict<any>;
@@ -130,8 +130,8 @@ const normalizeStringArray = (value: any): string[] => {
   return [];
 };
 
-export default (options: Options): Engine => {
-  options = _.assign({
+export default (opts?: Options): Engine => {
+  const options = _.assign({
     cache: false,
     extname: ".liquid",
     root: ["."],
@@ -139,7 +139,7 @@ export default (options: Options): Engine => {
     strict_variables: false,
     trimLeft: false,
     trimRight: false,
-  }, options);
+  }, opts);
   options.root = normalizeStringArray(options.root);
 
   return new Engine(options);

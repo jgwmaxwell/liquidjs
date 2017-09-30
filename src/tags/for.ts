@@ -1,5 +1,6 @@
 import { isObject, isString } from "lodash";
 import { Engine } from "../";
+import { WriteBuffer } from "../buffer";
 import * as lexical from "../lexical";
 import { evalExp } from "../syntax";
 import { Dict, Scope, Tag, TagToken, Template, Token } from "../types";
@@ -87,13 +88,13 @@ export class For implements Tag {
       },
     }));
 
-    const output = Buffer.from("", "utf-8");
+    const output = new WriteBuffer();
     const render = (ctx: Dict<any>) =>
       this
         .liquid
         .renderer
         .renderTemplates(this.templates, scope.push(ctx), output)
-        .catch(e => {
+        .catch((e: Error) => {
           if (e instanceof RenderBreakError) {
             output.write(e.resolvedHTML);
             if (e.message === "continue") { return; }
@@ -109,7 +110,7 @@ export class For implements Tag {
         }
         throw e;
       })
-      .then(() => output.toString("utf-8"));
+      .then(() => output.read());
   }
 }
 
