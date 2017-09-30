@@ -1,6 +1,7 @@
+require 'bundler/setup'
 require 'benchmark/ips'
 require 'json'
-require 'liquid'
+require 'liquid/c'
 
 RAW = File.read(File.expand_path('./sample.liquid'))
 VARS = JSON.parse(File.read(File.expand_path('./sample.json')))

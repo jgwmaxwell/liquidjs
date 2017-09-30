@@ -3,6 +3,8 @@ GEM
   specs:
     benchmark-ips (2.7.2)
     liquid (4.0.0)
+    liquid-c (4.0.0.rc1)
+      liquid (>= 3.0.0)
 
 PLATFORMS
   ruby
@@ -10,6 +12,7 @@ PLATFORMS
 DEPENDENCIES
   benchmark-ips
   liquid (>= 4.0.0)
+  liquid-c (= 4.0.0.rc1)
 
 BUNDLED WITH
    1.13.7

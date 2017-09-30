@@ -13,7 +13,12 @@ const tmpl = engine.parse(raw);
 
 suite
   .add("parsing", () => engine.parse(raw))
-  .add("rendering", () => engine.render(tmpl, vars).then(res => res.read()))
+  .add("rendering", {
+    defer: true,
+    fn(deferred) {
+      engine.render(tmpl, vars).then(res => res.read()).then(() => deferred.resolve());
+    }
+  })
   .on("cycle", event => {
     // tslint:disable-next-line:no-console
     console.log(String(event.target));
